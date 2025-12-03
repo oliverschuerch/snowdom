@@ -1,5 +1,7 @@
 import './style.css'
+import SnowDOM from './snowdom';
 
+new SnowDOM('#snowdom-world');
 
 // import typescriptLogo from './typescript.svg'
 // import viteLogo from '/vite.svg'
