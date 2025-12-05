@@ -5,7 +5,7 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: black;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -20,6 +20,7 @@ body {
 .row {
   display: flex;
   justify-content: space-between;
+  align-items: end;
   margin-inline: auto;
   padding-block: 2rem;
   max-width: 80%;
@@ -27,11 +28,15 @@ body {
   .cube {
     width: 3rem;
     aspect-ratio: 1;
-    background-color: #adf;
+    background-color: rgba(0, 200, 200, 0.5);
+
+    &.big {
+      width: 6rem;
+    }
   }
 }
 
-#snowdom-world {
+/* #snowdom-world {
   margin-inline: 3rem;
   margin-block: 3rem;
-}
+} */
