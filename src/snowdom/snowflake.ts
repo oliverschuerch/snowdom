@@ -7,12 +7,6 @@ type Randoms = {
   velocityY: number;
 };
 
-type Offset = {
-  x: number;
-  y: number;
-  cosX: number;
-};
-
 export class SnowDOMFlake {
   stageBox: DOMRect;
 
@@ -27,26 +21,22 @@ export class SnowDOMFlake {
 
   private fillStyle: string = `rgba(255, 255, 255, ${this.randoms.fillStyle})`;
   private size: number;
-  private offset: Offset = {
-    x: 0,
-    y: 0,
-    cosX: 0,
-  };
-  private velocityXFactor: number;
+  private offsetX: number = 0;
+  private offsetY: number = 0;
+  private xCosinus: number = 0;
   private velocityY: number;
+  private velocityXFactor: number;
 
-  get x(): number {
-    return this.randoms.x * this.stageBox.width + this.offset.x;
+  private get x(): number {
+    return this.randoms.x * this.stageBox.width + this.offsetX;
+  }
+  private get y(): number {
+    return this.randoms.y * this.stageBox.height + this.offsetY;
   }
 
-  get y(): number {
-    return this.randoms.y * this.stageBox.height + this.offset.y;
-  }
-
-  get velocityX(): number {
-    const cosX = Math.cos((this.offset.cosX += Math.random() / 50)) * 0.25;
-    // * X should be a user-option factor with a default value
-    return (cosX + this.randoms.velocityX) * this.velocityXFactor;
+  private get velocityX(): number {
+    const xCosinus = Math.cos((this.xCosinus += Math.random() / 50)) * 0.25;
+    return (xCosinus + this.randoms.velocityX) * this.velocityXFactor;
   }
 
   constructor({
@@ -71,8 +61,8 @@ export class SnowDOMFlake {
   }
 
   public render(context: CanvasRenderingContext2D) {
-    this.offset.x += this.velocityX;
-    this.offset.y += this.velocityY;
+    this.offsetX += this.velocityX;
+    this.offsetY += this.velocityY;
 
     context.fillStyle = 'rgba(0,0,0,0.05)';
     context.beginPath();
@@ -89,8 +79,8 @@ export class SnowDOMFlake {
   }
 
   reset() {
-    this.offset.x = 0;
-    this.offset.y = (this.randoms.y * this.stageBox.height + this.size) * -1;
+    this.offsetX = 0;
+    this.offsetY = (this.randoms.y * this.stageBox.height + this.size) * -1;
   }
 }
 

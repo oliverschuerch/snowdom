@@ -1,12 +1,10 @@
 import { SnowDOMFlake } from './snowflake';
 
 type DefaultOptions = {
-  flake: {
-    count: number;
-    size: number;
-    velocityX: number;
-    velocityY: number;
-  };
+  flakeCount: number;
+  flakeSize: number;
+  velocityX: number;
+  velocityY: number;
   roofSelector: string;
   debug?: boolean;
 };
@@ -15,12 +13,10 @@ export type SnowDOMOptions = Partial<DefaultOptions>;
 
 export default class SnowDOM {
   private options: DefaultOptions = {
-    flake: {
-      count: 1000,
-      size: 1,
-      velocityX: 1,
-      velocityY: 1,
-    },
+    flakeCount: 1000,
+    flakeSize: 1,
+    velocityX: 1,
+    velocityY: 1,
     roofSelector: '.snowdom-roof',
   };
 
@@ -90,13 +86,13 @@ export default class SnowDOM {
   }
 
   setupFlakes() {
-    for (let i = 0; i < this.options.flake.count; i++) {
+    for (let i = 0; i < this.options.flakeCount; i++) {
       this.flakes.push(
         new SnowDOMFlake({
           stageBox: this.stageBox,
-          sizeFactor: this.options.flake.size,
-          velocityXFactor: this.options.flake.velocityX,
-          velocityYFactor: this.options.flake.velocityY,
+          sizeFactor: this.options.flakeSize,
+          velocityXFactor: this.options.velocityX,
+          velocityYFactor: this.options.velocityY,
         }),
       );
     }
