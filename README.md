@@ -1,2 +1,3 @@
-# snowdom
-A javascript snowing machine with dom interaction
+# SnowDOM
+
+A javascript snowing engine with dom interaction

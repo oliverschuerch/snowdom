@@ -1,3 +1,4 @@
+import { SnowDOMPile } from './snowpile';
 import { SnowDOMFlake } from './snowflake';
 
 type DefaultOptions = {
@@ -5,7 +6,7 @@ type DefaultOptions = {
   flakeSize: number;
   velocityX: number;
   velocityY: number;
-  roofSelector: string;
+  pileSelector: string;
   debug?: boolean;
 };
 
@@ -13,11 +14,11 @@ export type SnowDOMOptions = Partial<DefaultOptions>;
 
 export default class SnowDOM {
   private options: DefaultOptions = {
-    flakeCount: 1000,
+    flakeCount: 3000,
     flakeSize: 1,
     velocityX: 1,
     velocityY: 1,
-    roofSelector: '.snowdom-roof',
+    pileSelector: '.snowdom-pile',
   };
 
   private container: HTMLElement = document.body;
@@ -26,6 +27,7 @@ export default class SnowDOM {
   private canvas: HTMLCanvasElement = document.createElement('canvas');
   private context: CanvasRenderingContext2D = this.canvas.getContext('2d')!;
 
+  private piles: SnowDOMPile[] = [];
   private flakes: SnowDOMFlake[] = [];
 
   constructor(selector: string, options?: SnowDOMOptions) {
@@ -35,7 +37,8 @@ export default class SnowDOM {
     this.render = this.render.bind(this);
 
     this.setupDOM(selector);
-    this.setupFlakes();
+    this.createPiles();
+    this.createFlakes();
     this.updateStage();
     this.render();
 
@@ -58,34 +61,21 @@ export default class SnowDOM {
     this.container.appendChild(this.canvas);
   }
 
-  updateStage() {
-    this.stageBox = this.container.getBoundingClientRect();
-
-    this.canvas.style.top = `${this.stageBox.top}px`;
-    this.canvas.style.left = `${this.stageBox.left}px`;
-    this.canvas.width = this.stageBox.width;
-    this.canvas.height = this.stageBox.height;
+  createPiles() {
+    this.piles = [];
 
     this.container
-      .querySelectorAll<HTMLElement>(this.options.roofSelector)
+      .querySelectorAll<HTMLElement>(this.options.pileSelector)
       .forEach((el: HTMLElement) => {
-        const roofBox = el.getBoundingClientRect();
-
-        this.context.fillStyle = this.options.debug ? 'red' : 'transparent';
-        this.context.fillRect(
-          roofBox.left - this.stageBox.left,
-          roofBox.top - this.stageBox.top,
-          roofBox.width,
-          10,
+        this.piles.push(
+          new SnowDOMPile({
+            pileBox: el.getBoundingClientRect(),
+          }),
         );
       });
-
-    this.flakes.forEach((flake: SnowDOMFlake) => {
-      flake.updateStageBox = this.stageBox;
-    });
   }
 
-  setupFlakes() {
+  createFlakes() {
     for (let i = 0; i < this.options.flakeCount; i++) {
       this.flakes.push(
         new SnowDOMFlake({
@@ -98,9 +88,29 @@ export default class SnowDOM {
     }
   }
 
+  updateStage() {
+    this.stageBox = this.container.getBoundingClientRect();
+
+    this.canvas.style.top = `${this.stageBox.top}px`;
+    this.canvas.style.left = `${this.stageBox.left}px`;
+    this.canvas.width = this.stageBox.width;
+    this.canvas.height = this.stageBox.height;
+
+    this.createPiles();
+
+    this.flakes.forEach((flake: SnowDOMFlake) => {
+      flake.stageBox = this.stageBox;
+    });
+  }
+
   render() {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
+    this.context.beginPath();
+    this.context.fillStyle = 'rgba(24, 48, 110, 0.1)';
+    this.context.rect(0, 0, this.stageBox.width, this.stageBox.height);
+    this.context.fill();
+    this.piles.forEach((pile: SnowDOMPile) => pile.render(this.context));
     this.flakes.forEach((flake: SnowDOMFlake) => flake.render(this.context));
 
     requestAnimationFrame(this.render);
