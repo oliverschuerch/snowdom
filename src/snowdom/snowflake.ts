@@ -8,18 +8,19 @@ type Randoms = {
 };
 
 export class SnowDOMFlake {
-  stageBox: DOMRect;
+  #stageBox: DOMRect;
 
   private randoms: Randoms = {
-    fillStyle: Math.random() * 0.6 + 0.2, // min 0.2, max 0.8
+    fillStyle: Math.random() * 0.7 + 0.2, // min 0.2, max 0.9
     x: Math.random() * 1.3 - 0.15, // min -0.15, max 1.15
     y: Math.random(),
-    size: Math.random() * 2 + 3, // min 3, max 5
+    size: Math.random() * 2 + 2, // min 2, max 4
     velocityX: Math.random() * 0.8, // min 0, max 0.8
     velocityY: Math.random() * 0.5 + 0.5, // min 0.5, max 1
   };
 
-  private fillStyle: string = `rgba(255, 255, 255, ${this.randoms.fillStyle})`;
+  private fillStyleDark: string = 'rgba(0, 0, 0, 0.05)';
+  private fillStyleLight: string = `rgba(255, 255, 255, ${this.randoms.fillStyle})`;
   private size: number;
   private offsetX: number = 0;
   private offsetY: number = 0;
@@ -28,10 +29,10 @@ export class SnowDOMFlake {
   private velocityXFactor: number;
 
   private get x(): number {
-    return this.randoms.x * this.stageBox.width + this.offsetX;
+    return this.randoms.x * this.#stageBox.width + this.offsetX;
   }
   private get y(): number {
-    return this.randoms.y * this.stageBox.height + this.offsetY;
+    return this.randoms.y * this.#stageBox.height + this.offsetY;
   }
 
   private get velocityX(): number {
@@ -50,36 +51,36 @@ export class SnowDOMFlake {
     velocityXFactor: number;
     velocityYFactor: number;
   }) {
-    this.stageBox = stageBox;
+    this.#stageBox = stageBox;
     this.size = this.randoms.size * sizeFactor;
     this.velocityXFactor = velocityXFactor;
     this.velocityY = this.randoms.velocityY * velocityYFactor;
   }
 
-  public set updateStageBox(stageBox: DOMRect) {
-    this.stageBox = stageBox;
+  public set stageBox(stageBox: DOMRect) {
+    this.#stageBox = stageBox;
   }
 
   public render(context: CanvasRenderingContext2D) {
     this.offsetX += this.velocityX;
     this.offsetY += this.velocityY;
 
-    context.fillStyle = 'rgba(0,0,0,0.05)';
+    context.fillStyle = this.fillStyleDark;
     context.beginPath();
     context.arc(this.x + 1, this.y + 1, this.size, 0, Math.PI * 2);
     context.fill();
-    context.fillStyle = this.fillStyle;
+    context.fillStyle = this.fillStyleLight;
     context.beginPath();
     context.arc(this.x, this.y, this.size, 0, Math.PI * 2);
     context.fill();
 
-    if (this.y >= this.stageBox.height) {
+    if (this.y >= this.#stageBox.height) {
       this.reset();
     }
   }
 
   reset() {
     this.offsetX = 0;
-    this.offsetY = (this.randoms.y * this.stageBox.height + this.size) * -1;
+    this.offsetY = (this.randoms.y * this.#stageBox.height + this.size) * -1;
   }
 }
